@@ -18,6 +18,18 @@ class Path extends Phaser.Scene {
         // Create a curve, for use with the path
         // Initial set of points are only used to ensure there is something on screen to begin with.
         // No need to save these values.
+
+        this.startFollowO = {
+            from: 0,
+            to: 1,
+            delay: 0,
+            duration: 2000,
+            ease: 'Sine.easeInOut',
+            repeat: -1,
+            yoyo: true,
+            rotateToPath: true,
+            rotationOffset: -90
+        };
         this.points = [
             20, 20,
             80, 400,
@@ -47,6 +59,7 @@ class Path extends Phaser.Scene {
 
         // TODO:
         //  - set the run mode flag to false (after implenting run mode)
+        this.runMode = false;
 
         // Create enemyShip as a follower type of sprite
         // Call startFollow() on enemyShip to have it follow the curve
@@ -95,7 +108,9 @@ class Path extends Phaser.Scene {
             //   If run mode is active, then don't call clearPoints()
             //   (i.e., can only clear points when not in run mode)
 
-            this.clearPoints();
+            if (this.runMode == false) {
+                this.clearPoints();
+            }
 
         }
 
@@ -103,6 +118,12 @@ class Path extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(this.oKey)) {
             console.log("Output the points");
+            console.log("[")
+            for (const element of this.curve.points){
+                console.log(element.x + "," + element.y)
+            }
+            console.log("]")
+
 
             // TODO:
             // * Print out the points comprising the line
@@ -119,6 +140,21 @@ class Path extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
             console.log("Run mode");
+
+            if (this.runMode == true){
+                my.sprite.enemyShip.visible = false;
+                my.sprite.enemyShip.stopFollow;
+                this.runMode = false;
+            } else {
+                my.sprite.enemyShip.visible = true;
+                my.sprite.enemyShip.x = this.curve.points[0].x;
+                my.sprite.enemyShip.y = this.curve.points[0].y;
+                this.runMode = true;
+                my.sprite.enemyShip.startFollow(this.startFollowO)
+
+            }
+
+            
             //
             // TODO: 
             // Implement run mode
